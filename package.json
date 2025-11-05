@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "size": "npm run build && size-limit",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -15,7 +16,8 @@
   },
   "size-limit": [
     {
-      "limit": "4500 ms"
+      "limit": "35 kB",
+      "path": ".next/*"
     }
   ],
   "devDependencies": {
