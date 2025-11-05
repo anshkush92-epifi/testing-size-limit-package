@@ -18,10 +18,25 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "bundlewatch": "^0.4.1",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "bundlewatch": {
+    "files": [
+      {
+        "path": ".next/**/*.js",
+        "maxSize": "100kB"
+      }
+    ],
+    "ci": {
+      "repoBranchBase": "main",
+      "trackBranches": [
+        "main"
+      ]
+    }
   },
   "nextBundleAnalysis": {
     "budget": 358400,
