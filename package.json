@@ -22,6 +22,10 @@
     {
       "limit": "35 kB",
       "path": ".next/*"
+    },
+    {
+      "limit": "35 kB",
+      "path": ".next/static/*"
     }
   ],
   "devDependencies": {
