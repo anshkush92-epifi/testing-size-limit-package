@@ -24,7 +24,7 @@
       "path": ".next/*"
     },
     {
-      "path": ".next/static/*"
+      "path": ".next/static/chunks/**/*.js"
     }
   ],
   "devDependencies": {
