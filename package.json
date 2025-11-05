@@ -24,7 +24,6 @@
       "path": ".next/*"
     },
     {
-      "limit": "1024 kB",
       "path": ".next/static/*"
     }
   ],
