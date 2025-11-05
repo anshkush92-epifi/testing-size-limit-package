@@ -1,4 +1,4 @@
-name: "size"
+name: "Size Limit (Bundle size changes check)"
 on:
   pull_request:
     branches:

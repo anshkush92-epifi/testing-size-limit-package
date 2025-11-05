@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "size": "npm run build && size-limit",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -14,14 +13,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
-  "size-limit": [
-    {
-      "limit": "35 kB",
-      "path": ".next/*"
-    }
-  ],
   "devDependencies": {
-    "@size-limit/preset-app": "^11.2.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
