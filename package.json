@@ -22,5 +22,11 @@
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "nextBundleAnalysis": {
+    "budget": 358400,
+    "budgetPercentIncreaseRed": 20,
+    "minimumChangeThreshold": 0,
+    "showDetails": true
   }
 }
