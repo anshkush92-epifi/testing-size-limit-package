@@ -117,12 +117,19 @@ const outputJson = {
   __rootMainFiles: globalAppDirBundle,
 };
 
-// compute and log diffs
+// compute and log diffs (previousAnalysis is compat schema; guards handle missing keys)
 logDiffs(previousAnalysis, outputJson);
 
-// write output
+// write outputs
 mkdirp.sync(analyzeDir);
-fs.writeFileSync(analysisPath, JSON.stringify(outputJson));
+
+// 1) Compat output for nextjs-bundle-analysis compare (only pages + __global)
+const compatJson = { __global: globalAppDirBundleSizes, ...allAppDirSizes };
+fs.writeFileSync(analysisPath, JSON.stringify(compatJson));
+
+// 2) Extended output for richer local inspection
+const extendedPath = path.join(analyzeDir, '__bundle_analysis_extended.json');
+fs.writeFileSync(extendedPath, JSON.stringify(outputJson));
 
 // --------------
 // Util Functions
