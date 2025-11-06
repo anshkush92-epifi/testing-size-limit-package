@@ -1,17 +1,44 @@
-- name: Analyze bundle sizes
-  uses: transferwise/actions-next-bundle-analyzer@v2
-  with:
-    # Optional, specifies where to look for .next folder. Defaults to cwd.
-    working-directory: ./
-    # Optional, configures commenting strategy around insignificant changes, defaults to `always`.
-    # Available options:
-    #   always: Always comment on PRs, even if it's just to say there are no significant changes.
-    #   skip-insignificant: Skip commenting on PRs if there are no signficant changes in page sizes.
-    comment-strategy: 'always'
-    # Optional, configures whether to create the bundle size summary issue, defaults to `true`.
-    # Available options:
-    #   true
-    #   false
-    create-issue: true
-    # Optional, defaults to `github.token`.
-    github-token: ${{ secrets.GITHUB_TOKEN }}
+name: TransferWise Next.js Bundle Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Analyze bundle sizes
+        uses: transferwise/actions-next-bundle-analyzer@v2
+        with:
+          working-directory: ./
+          comment-strategy: 'always'
+          create-issue: true
+          github-token: ${{ github.token }}
