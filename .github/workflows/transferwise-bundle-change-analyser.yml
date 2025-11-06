@@ -35,6 +35,9 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
+      - name: App Router compatibility (manifests)
+        run: node scripts/compat-next-manifests.js
+
       - name: Analyze bundle sizes
         uses: transferwise/actions-next-bundle-analyzer@v2
         with:
