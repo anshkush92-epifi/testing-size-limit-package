@@ -12,10 +12,7 @@ defaults:
     working-directory: ./
 
 env:
-  CI_REPO_OWNER: anshkush92-epifi
-  CI_REPO_NAME: testing-size-limit-package
   CI_COMMIT_SHA: ${{ github.sha }}
-  CI_BRANCH: main
   BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
 
 permissions:
@@ -37,6 +34,16 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Derive CI env for bundlewatch
+        run: |
+          echo "CI_REPO_OWNER=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo "CI_REPO_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "CI_BRANCH=${{ github.base_ref }}" >> $GITHUB_ENV
+          else
+            echo "CI_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+          fi
 
       - name: Restore next build
         uses: actions/cache@v4
