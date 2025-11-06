@@ -68,7 +68,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bundle
-          path: .next/analyze/__bundle_analysis.json
+          path: |
+            .next/analyze/__bundle_analysis.json
+            .next/analyze/__bundle_analysis_extended.json
 
       - name: Download base branch bundle stats
         uses: dawidd6/action-download-artifact@v2
@@ -94,6 +96,17 @@ jobs:
       - name: Compare with base branch bundle
         if: success() && github.event.number
         run: ls -laR .next/analyze/base && npx -p nextjs-bundle-analysis compare
+
+      - name: Make analysis file include per-file data for append step
+        if: success() && github.event.number
+        run: |
+          if [ -f .next/analyze/__bundle_analysis_extended.json ]; then
+            cp .next/analyze/__bundle_analysis_extended.json .next/analyze/__bundle_analysis.json
+          fi
+
+      - name: Append per-file bundle changes to comment
+        if: success() && github.event.number
+        run: node scripts/append-extended-bundle-comment.js
 
       - name: Get Comment Body
         id: get-comment-body
