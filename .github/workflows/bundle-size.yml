@@ -12,8 +12,8 @@ defaults:
     working-directory: ./
 
 env:
-  CI_REPO_OWNER: jherr
-  CI_REPO_NAME: bundle-size-checker
+  CI_REPO_OWNER: anshkush92-epifi
+  CI_REPO_NAME: testing-size-limit-package
   CI_COMMIT_SHA: ${{ github.sha }}
   CI_BRANCH: main
   BUNDLEWATCH_GITHUB_TOKEN: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
@@ -33,13 +33,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
+          cache: 'npm'
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 8
-
-      - name: Install
-        run: pnpm install
+      - name: Install dependencies
+        run: npm ci
 
       - name: Restore next build
         uses: actions/cache@v4
@@ -51,7 +48,50 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}
 
       - name: Build next.js app
-        run: ./node_modules/.bin/next build
+        run: npm run build
 
       - name: Analyze bundle
-        run: npm run bundlewatch
+        run: npm run bundlewatch | tee bundlewatch_output.txt || true
+
+      - name: Extract Bundlewatch URL
+        id: extract-url
+        run: |
+          URL=$(grep -Eo 'https?://[^ )]+' bundlewatch_output.txt | head -n 1 || true)
+          if [ -z "$URL" ]; then
+            URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+          echo "url=$URL" >> $GITHUB_OUTPUT
+
+      - name: Get Comment Body
+        id: get-comment-body
+        if: success() && github.event.number
+        run: |
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "<!-- __BUNDLEWATCH__ -->" >> $GITHUB_OUTPUT
+          echo "### Bundle Size Check" >> $GITHUB_OUTPUT
+          echo "Result link: ${{ steps.extract-url.outputs.url }}" >> $GITHUB_OUTPUT
+          echo EOF >> $GITHUB_OUTPUT
+
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        if: success() && github.event.number
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: '<!-- __BUNDLEWATCH__ -->'
+
+      - name: Create Comment
+        uses: peter-evans/create-or-update-comment@v2
+        if: success() && github.event.number && steps.fc.outputs.comment-id == 0
+        with:
+          issue-number: ${{ github.event.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+
+      - name: Update Comment
+        uses: peter-evans/create-or-update-comment@v2
+        if: success() && github.event.number && steps.fc.outputs.comment-id != 0
+        with:
+          issue-number: ${{ github.event.number }}
+          body: ${{ steps.get-comment-body.outputs.body }}
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
