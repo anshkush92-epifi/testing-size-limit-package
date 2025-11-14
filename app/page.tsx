@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import * as Material from "@mui/material";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Link href="/one">One</Link>
         <Link href="/two">Two</Link>
+        <Material.Button>Hello world</Material.Button>
         <Image
           className="dark:invert"
           src="/next.svg"
